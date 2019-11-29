@@ -1,0 +1,92 @@
+-- 5A
+SELECT
+  `Salesperson` . `Name` AS `SalespersonName`
+FROM
+	`Salesperson`
+WHERE EXISTS (
+  SELECT
+    1
+  FROM
+    `Orders`
+  WHERE
+    `Orders` . `CustomerID` = (
+      SELECT
+        `CustomerID`
+      FROM
+        `Customer`
+      WHERE
+        `Name` = "George"
+    ) AND
+    `Orders` . `SalespersonID` = `Salesperson` . `SalespersonID`
+);
+
+-- 5B
+SELECT
+  `Salesperson` . `Name` AS `SalespersonName`
+FROM
+	`Salesperson`
+WHERE NOT EXISTS (
+  SELECT
+    1
+  FROM
+    `Orders`
+  WHERE
+    `Orders` . `CustomerID` = (
+      SELECT
+        `CustomerID`
+      FROM
+        `Customer`
+      WHERE
+        `Name` = "George"
+    ) AND
+    `Orders` . `SalespersonID` = `Salesperson` . `SalespersonID`
+);
+
+-- 5C
+SELECT
+  `Salesperson` . `Name` AS `SalespersonName`
+FROM
+	`Salesperson`
+WHERE (
+  SELECT
+    COUNT(*)
+  FROM
+    `Orders`
+  WHERE
+    `Orders` . `SalespersonID` = `Salesperson` . `SalespersonID`
+) >= 2;
+
+-- 6A
+SELECT
+  `Name`
+FROM
+  `Salesperson`
+ORDER BY
+  `Salary` DESC
+LIMIT 2, 1;
+
+-- 6B
+CREATE VIEW `BigOrders` AS (
+  SELECT
+    `CustomerID`,
+    SUM(`NumberOfUnits` * `CostOfUnit`) AS `TotalOrderValue`
+  FROM
+    `Orders`
+  GROUP BY
+    `CustomerID`
+  HAVING
+    `TotalOrderValue` > 1000
+);
+
+-- 6C
+SELECT
+	YEAR(`OrderDate`) AS `Year`,
+	MONTH(`OrderDate`) AS `Month`,
+	COUNT(*) AS `NumOrders`
+FROM
+	`Orders`
+GROUP BY
+	`Month`, `Year`
+ORDER BY
+	`Month` DESC,
+	`Year` DESC;
